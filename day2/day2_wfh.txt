@@ -1,0 +1,4 @@
+create an ec2 instance t3.medium
+linux_AMI
+Place that instance on subnet
+Attache security group & PubliceIp
