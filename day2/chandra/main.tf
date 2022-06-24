@@ -23,17 +23,9 @@ variable "region" {
   
 }
 
-
-variable "access_key" {
-  default = "AKIATHIV3VM3P2J23SXR"
-}
-
-variable "secret_key" {
-  default = "qhib88bR0EZf1F588j4jEn/cfmraiMlTa0B51bNh"
-}
-
 provider "aws" {
   region     = var.region
+  profile    = default
 }
 
 
