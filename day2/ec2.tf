@@ -30,13 +30,13 @@ resource "aws_instance" "sathya-instance" {
   ami           = var.image
   instance_type = var.instance_type
   subnet_id = "subnet-0ca0da59336525821"
-  security_groups = [ "ec2-sg" ]
+#   vpc_security_group_ids = [ "sg-0caabe23d91edbf64" ]
+  security_groups = [ "sg-0caabe23d91edbf64" ]
   
   tags = {
     Name = "HelloSathya"
   }
-
-  
+ 
 }
 
 
