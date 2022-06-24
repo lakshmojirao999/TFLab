@@ -1,39 +1,29 @@
+provider "aws" {
+
+}
+variable "region" {
+    default = "us-east-1"
+}
+variable "access_key" {
+}
+variable "secret_key" {
+}
+
 variable "image" {
-    default = "ami-098e42ae54c764c35"
+    default = "ami-0cff7528ff583bf9a"
   
 }
 
 variable "instance_type" {
-    default = "t3.micro"
+    default = "t3.medium"
   
 }
 
-variable "region" {
-    default = "us-west-2"
-  
-}
 
-variable "access_key" {
-  
-}
-
-variable "secret_key" {
-  
-}
-
-provider "aws" {
-  region     = var.region
-  access_key = var.access_key
-  secret_key = var.secret_key
-}
-
-
-resource "aws_instance" "sandbox" {
+resource "aws_instance" "tf-instate" {
   ami           = var.image
   instance_type = var.instance_type
+  subnet_id = "subnet-04ac392c03bd9301e"
+  security_groups = [ "sg-0d24236f698e7f163" ]
 
-  tags = {
-    Name = "HelloWorld"
-  }    
-  
 }
