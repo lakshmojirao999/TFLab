@@ -13,12 +13,10 @@ variable "region" {
   
 }
 variable "access_key" {
-    default = "AKIAQXDKJAA7ZCKOIUUK"
   
 }
 
 variable "secret_key" {
-    default = "LlnwVgBgvOaspNpoebZPJCRQQkWlr4y0BuH62bb9"
   
 }
 
