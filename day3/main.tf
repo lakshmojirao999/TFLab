@@ -4,13 +4,13 @@
 
 variable "access_key" { default ="" }
 variable "secret_key" { default ="" }
-variable "region" { default ="us-west-2" }
+variable "region" { default ="us-east-1" }
 variable "instance_type" { default ="t3.medium" }
 variable "assign_public_ip" { default ="true" }
-variable "subnetId" {default = "subnet-9681b3cc"}
-variable "key_name" { default = "deployer-key"}
+variable "subnetId" {default = "subnet-0da08f706ace71d96"}
+variable "key_name" { default = "terraform-key"}
 variable "private_key_path" { default =  "~/.ssh/id_rsa"}
-
+variable "security_group" {default = "sg-075d9f9a89617f250" }  
 ###########################
 #       provider          #
 ###########################
@@ -26,12 +26,12 @@ provider "aws" {
 ###########################
 
 
-data "aws_ami" "ubuntu" {
+data "aws_ami" "red_hat" {
   most_recent = true
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+    values = ["RHEL_HA-8.5_HVM-20220127-x86_64-3-Hourly2-GP2 *"]
   }
 
   filter {
@@ -39,38 +39,45 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
 
-  owners = ["099720109477"] # Canonical
+  owners = ["202242095650"]# Canonical
 }
 
 
-resource "aws_key_pair" "deployer" {
-  key_name   = "deployer-key"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDANmeK+hHNaYUU105614+mmGyVi3R3e48XzdKqaNGk58dF9+zE2RL4hQNX26wggTru5WXKPDOiIXhu/QG4nxihXy8r8AjCVYUY5CRr84tuW/Zj4OKUBIC2khQZdHPt43T+7S2xBseLqgm3ZbzlwmQXvAkbMM4hfYkk0aZ6wI6+8ZbMsMtRGirGmaK3w8TtCZ68fAWpmkipLzHObXwYFdoS3ghie//bUGh6jXRBj20ct8HarJs8wiKe0i8JJD9YS3daV/k+noJ2858vUVnQkRV+6oE4fDB+2m6epZB9EtP637p+1bum/9qhhGQzx/VOaASer4o79vNqrQj9G3obYBYnzRZtBWWre8WgxbgHgSxlHMzNw56v/eIlzvuOxSjcHMzv//OlXkOlIyOVq0eKBl0GyD3lclH01ea7Xbz7kGnZWVPaNjaluqOWbg00J48MniH8ZmAd/VxblL0UbH0j3ayQxKOdgPSaJqgZOrG8VtcbAmI6sKThn5lRiDVsq12H2bUsa2hBJaupqnF8zu1wlv//n1QJnmjQr5AgYKz7W+Jx5a4tDN9v5UKDQHOkU/IAWFnaNaNIb0qd37nGBV7xGs25PkOU1OhmtpWanAX0CphWN286OnbVTkCf5bTAyR8hp9wDp2ImySd6jC9qGSDleoMnn77wL0+gyW+zN0oOBl7OaQ== lakshmoji@trysapling.com"
+resource "aws_key_pair" "instance" {
+  key_name   = "terraform-key"
+  public_key =""
 }
 
-resource "aws_instance" "sandbox" {
-  ami           = data.aws_ami.ubuntu.id
+resource "aws_instance" "intro" {
+  ami           = data.aws_ami.red_hat.id
   instance_type = var.instance_type
   associate_public_ip_address = var.assign_public_ip
   subnet_id = var.subnetId
   key_name = var.key_name
+  security_groups = var.security_group
   #key_name  = aws_key_pair.deployer.key_name
 
   tags = {
-    Name = "HelloWorld"
+    Name = "Hello earth"
   } 
 
   connection {
     type     = "ssh"
-    user     = "ubuntu"
+    user     = "red_hat"
     private_key = "${file(var.private_key_path)}"
     host     = self.public_ip
   }  
 
   provisioner "remote-exec" {
     inline = [
-      "sudo apt update",
-      "sudo apt install nginx -y "
+      "sudo yum update",
+      "sudo yum install wget unzip httpd -y",
+      "sudo systemctl start httpd",
+      "sudo systemctl enable httpd",
+      "sudo yum install nginx -y " ,
+      "sudo systemctl start nginx",
+      "sudo systemctl enable nginx"
+
     ]
   } 
   
@@ -81,6 +88,6 @@ resource "aws_instance" "sandbox" {
 #######################################
 
 output "instance_ip" {
-    value = aws_instance.sandbox.public_ip
+    value = aws_instance.intro.public_ip
   
 }
