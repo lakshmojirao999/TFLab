@@ -27,7 +27,7 @@ provider "aws" {
 ###########################
 
 
-data "aws_ami" "ubuntu" {
+data "aws_ami" "centos" {
   most_recent = true
 
   filter {
